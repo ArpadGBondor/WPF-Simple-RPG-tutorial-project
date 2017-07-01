@@ -6,27 +6,131 @@
         xmlns:local="clr-namespace:SuperAdventure.UI"
         mc:Ignorable="d"
         Title="My Game" 
-        MinHeight="300" MinWidth="300" SizeToContent="WidthAndHeight">
+        Height="700" Width="700">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Hit points:" Margin="5" />
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Experience:" Margin="5" />
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Gold:" Margin="5" />
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Level:" Margin="5" />
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Hit points:" Margin="5" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Experience:" Margin="5" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Gold:" Margin="5" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Level:" Margin="5" />
 
-        <TextBlock Grid.Row="0" Grid.Column="1" Name="lblHitPoints" Margin="5" />
-        <TextBlock Grid.Row="1" Grid.Column="2" Name="lblExperience" Margin="5" />
-        <TextBlock Grid.Row="2" Grid.Column="3" Name="lblGold" Margin="5" />
-        <TextBlock Grid.Row="3" Grid.Column="4" Name="lblLevel" Margin="5" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Name="lblHitPoints" Margin="5" />
+                <TextBlock Grid.Row="1" Grid.Column="2" Name="lblExperience" Margin="5" />
+                <TextBlock Grid.Row="2" Grid.Column="3" Name="lblGold" Margin="5" />
+                <TextBlock Grid.Row="3" Grid.Column="4" Name="lblLevel" Margin="5" />
+            </Grid>
 
+
+            <DataGrid x:Name="dgvInventory" 
+                      Grid.Row="1"
+                      IsReadOnly="True" 
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserResizeRows="False"
+                      IsEnabled="False"
+                      SelectionMode="Single"
+                      HeadersVisibility="Column"
+                      Margin="5" />
+
+            <DataGrid x:Name="dgvQuests" 
+                      Grid.Row="2"
+                      IsReadOnly="True" 
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserResizeRows="False"
+                      IsEnabled="False"
+                      SelectionMode="Single"
+                      HeadersVisibility="Column"
+                      Margin="5" />
+
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <RichTextBox Grid.Row="0" 
+                         Name="rtbLocation" 
+                         IsReadOnly="True" 
+                         Margin="5"/>
+            <RichTextBox Grid.Row="1" 
+                         Name="rtbMessages" 
+                         IsReadOnly="True" 
+                         Margin="5"/>
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Row="0"
+                        Grid.Column="2"
+                        Name="btnNorth"
+                        Content="North" 
+                        Margin="5" Click="btnNorth_Click"/>
+                <Button Grid.Row="1"
+                        Grid.Column="1"
+                        Name="btnWest"
+                        Content="West" 
+                        Margin="5" Click="btnWest_Click"/>
+                <Button Grid.Row="1"
+                        Grid.Column="3"
+                        Name="btnEast"
+                        Content="East" 
+                        Margin="5" Click="btnEast_Click"/>
+                <Button Grid.Row="2"
+                        Grid.Column="2"
+                        Name="btnSouth"
+                        Content="South" 
+                        Margin="5" Click="btnSouth_Click"/>
+            </Grid>
+            <Grid Grid.Row="4" Margin="10" >
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Select action" Margin="5" />
+                <Button Grid.Row="1" Grid.Column="1" Name="btnUseWeapon" Content="Use" Margin="5" Click="btnUseWeapon_Click" />
+                <Button Grid.Row="2" Grid.Column="1" Name="btnUsePotion" Content="Use" Margin="5" Click="btnUsePotion_Click" />
+                <ComboBox Grid.Row="1" Grid.Column="0" Name="cboWeapons" Margin="5" />
+                <ComboBox Grid.Row="2" Grid.Column="0" Name="cboPotions" Margin="5" />
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

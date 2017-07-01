@@ -27,20 +27,42 @@ namespace SuperAdventure.UI
         {
             InitializeComponent();
 
-            _player = 
-                new Player()
-                {
-                    CurrentHitPoints    = 10,
-                    MaximumHitPoints    = 10,
-                    Gold                = 20,
-                    ExperiencePoints    = 0,
-                    Level               = 1
-                };
+            _player = new Player(10, 10, 20, 0, 1);
 
             lblHitPoints.Text = _player.CurrentHitPoints.ToString() + "/" + _player.MaximumHitPoints.ToString();
             lblGold.Text = _player.Gold.ToString();
             lblExperience.Text = _player.ExperiencePoints.ToString();
             lblLevel.Text = _player.Level.ToString();
+
+        }
+
+        private void btnNorth_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnWest_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnEast_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnSouth_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnUseWeapon_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnUsePotion_Click(object sender, RoutedEventArgs e)
+        {
 
         }
     }
