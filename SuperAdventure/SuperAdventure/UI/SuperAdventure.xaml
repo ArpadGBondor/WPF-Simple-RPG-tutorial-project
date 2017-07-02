@@ -41,28 +41,33 @@
             </Grid>
 
 
-            <DataGrid x:Name="dgvInventory" 
+            <ListView x:Name="dgvInventory" 
                       Grid.Row="1"
-                      IsReadOnly="True" 
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
-                      CanUserResizeRows="False"
                       IsEnabled="False"
                       SelectionMode="Single"
-                      HeadersVisibility="Column"
-                      Margin="5" />
+                      ScrollViewer.CanContentScroll="True"
+                      Margin="5">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn  Header="Name" Width="197" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn  Header="Quantity" DisplayMemberBinding="{Binding Quantity}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
 
-            <DataGrid x:Name="dgvQuests" 
+            <ListView x:Name="dgvQuests" 
                       Grid.Row="2"
-                      IsReadOnly="True" 
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
-                      CanUserResizeRows="False"
                       IsEnabled="False"
                       SelectionMode="Single"
-                      HeadersVisibility="Column"
-                      Margin="5" />
-
+                      ScrollViewer.CanContentScroll="True"
+                      Margin="5">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn  Header="Name" Width="197" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn  Header="Done?" DisplayMemberBinding="{Binding IsDone}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
         </Grid>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
@@ -128,8 +133,8 @@
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="Select action" Margin="5" />
                 <Button Grid.Row="1" Grid.Column="1" Name="btnUseWeapon" Content="Use" Margin="5" Click="btnUseWeapon_Click" />
                 <Button Grid.Row="2" Grid.Column="1" Name="btnUsePotion" Content="Use" Margin="5" Click="btnUsePotion_Click" />
-                <ComboBox Grid.Row="1" Grid.Column="0" Name="cboWeapons" Margin="5" />
-                <ComboBox Grid.Row="2" Grid.Column="0" Name="cboPotions" Margin="5" />
+                <ComboBox Grid.Row="1" Grid.Column="0" Name="cboWeapons" DisplayMemberPath="Name" SelectedValuePath="ID" Margin="5" />
+                <ComboBox Grid.Row="2" Grid.Column="0" Name="cboPotions" DisplayMemberPath="Name" SelectedValuePath="ID" Margin="5" />
             </Grid>
         </Grid>
     </Grid>
