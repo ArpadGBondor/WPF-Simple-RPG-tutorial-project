@@ -24,7 +24,12 @@ namespace SuperAdventure_WinForms
             MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
             _player.Inventory.Add(new InventoryItem(World.ItemByID(World.ITEM_ID_RUSTY_SWORD), 1));
 
-            lblHitPoints.Text = _player.CurrentHitPoints.ToString();
+            UpdatePlayerInfoUI();
+        }
+
+        public void UpdatePlayerInfoUI()
+        {
+            lblHitPoints.Text = _player.CurrentHitPoints.ToString() + "/" + _player.MaximumHitPoints.ToString();
             lblGold.Text = _player.Gold.ToString();
             lblExperience.Text = _player.ExperiencePoints.ToString();
             lblLevel.Text = _player.Level.ToString();
@@ -76,7 +81,7 @@ namespace SuperAdventure_WinForms
             _player.CurrentHitPoints = _player.MaximumHitPoints;
 
             // Update Hit Points in UI
-            lblHitPoints.Text = _player.CurrentHitPoints.ToString();
+            UpdatePlayerInfoUI();
 
             // Does the location have a quest?
             if (newLocation.QuestAvailableHere != null)
@@ -263,11 +268,7 @@ namespace SuperAdventure_WinForms
                 }
 
                 // Refresh player information and inventory controls
-                lblHitPoints.Text = _player.CurrentHitPoints.ToString();
-                lblGold.Text = _player.Gold.ToString();
-                lblExperience.Text = _player.ExperiencePoints.ToString();
-                lblLevel.Text = _player.Level.ToString();
-
+                UpdatePlayerInfoUI();
                 UpdateInventoryListInUI();
                 UpdateWeaponListInUI();
                 UpdatePotionListInUI();
@@ -292,7 +293,7 @@ namespace SuperAdventure_WinForms
                 _player.CurrentHitPoints -= damageToPlayer;
 
                 // Refresh player data in UI
-                lblHitPoints.Text = _player.CurrentHitPoints.ToString();
+                UpdatePlayerInfoUI();
 
                 if (_player.CurrentHitPoints <= 0)
                 {
@@ -355,7 +356,7 @@ namespace SuperAdventure_WinForms
             }
 
             // Refresh player data in UI
-            lblHitPoints.Text = _player.CurrentHitPoints.ToString();
+            UpdatePlayerInfoUI();
             UpdateInventoryListInUI();
             UpdatePotionListInUI();
 
