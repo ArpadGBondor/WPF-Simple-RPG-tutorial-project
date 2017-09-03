@@ -27,6 +27,7 @@ namespace Engine
         public const int MONSTER_ID_RAT = 1;
         public const int MONSTER_ID_SNAKE = 2;
         public const int MONSTER_ID_GIANT_SPIDER = 3;
+        public const int MONSTER_ID_BANDIT = 4;
 
         public const int QUEST_ID_CLEAR_ALCHEMIST_GARDEN = 1;
         public const int QUEST_ID_CLEAR_FARMERS_FIELD = 2;
@@ -58,7 +59,7 @@ namespace Engine
             Items.Add(new Item(ITEM_ID_SNAKESKIN, "Snakeskin", "Snakeskins"));
             Items.Add(new Weapon(ITEM_ID_CLUB, "Club", "Clubs", 3, 10));
             Items.Add(new HealingPotion(ITEM_ID_HEALING_POTION, "Healing potion", "Healing potions", 5));
-            Items.Add(new Item(ITEM_ID_SPIDER_FANG, "Spider fang", "Spider fangs"));
+            Items.Add(new Weapon(ITEM_ID_SPIDER_FANG, "Spider fang", "Spider fangs", 2, 5));
             Items.Add(new Item(ITEM_ID_SPIDER_SILK, "Spider silk", "Spider silks"));
             Items.Add(new Item(ITEM_ID_ADVENTURER_PASS, "Adventurer pass", "Adventurer passes"));
         }
@@ -66,7 +67,7 @@ namespace Engine
         private static void PopulateMonsters()
         {
             Monster rat = new Monster(MONSTER_ID_RAT, "Rat", 5, 3, 10, 3, 3);
-            rat.LootTable.Add(new LootItem(ItemByID(ITEM_ID_RAT_TAIL), 75, false));
+            rat.LootTable.Add(new LootItem(ItemByID(MONSTER_ID_RAT), 75, false));
             rat.LootTable.Add(new LootItem(ItemByID(ITEM_ID_PIECE_OF_FUR), 75, true));
 
             Monster snake = new Monster(MONSTER_ID_SNAKE, "Snake", 5, 3, 10, 3, 3);
@@ -77,9 +78,14 @@ namespace Engine
             giantSpider.LootTable.Add(new LootItem(ItemByID(ITEM_ID_SPIDER_FANG), 75, true));
             giantSpider.LootTable.Add(new LootItem(ItemByID(ITEM_ID_SPIDER_SILK), 25, false));
 
+            Monster bandit = new Monster(MONSTER_ID_BANDIT, "Bandit", 30, 10, 100, 15, 15);
+            bandit.LootTable.Add(new LootItem(ItemByID(ITEM_ID_RUSTY_SWORD), 75, true));
+            bandit.LootTable.Add(new LootItem(ItemByID(ITEM_ID_CLUB), 25, false));
+
             Monsters.Add(rat);
             Monsters.Add(snake);
             Monsters.Add(giantSpider);
+            Monsters.Add(bandit);
         }
 
         private static void PopulateQuests()
@@ -130,6 +136,7 @@ namespace Engine
             Location guardPost = new Location(LOCATION_ID_GUARD_POST, "Guard post", "There is a large, tough-looking guard here.", ItemByID(ITEM_ID_ADVENTURER_PASS));
 
             Location bridge = new Location(LOCATION_ID_BRIDGE, "Bridge", "A stone bridge crosses a wide river.");
+            bridge.MonsterLivingHere = MonsterByID(MONSTER_ID_BANDIT);
 
             Location spiderField = new Location(LOCATION_ID_SPIDER_FIELD, "Forest", "You see spider webs covering covering the trees in this forest.");
             spiderField.MonsterLivingHere = MonsterByID(MONSTER_ID_GIANT_SPIDER);
