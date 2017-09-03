@@ -150,7 +150,7 @@ namespace SuperAdventure_WPF.UI
                             // Display message
                             LogMessage(message);
 
-                            _player.ExperiencePoints += newLocation.QuestAvailableHere.RewardExperiencePoints;
+                            _player.AddExperiencePoints(newLocation.QuestAvailableHere.RewardExperiencePoints);
                             _player.Gold += newLocation.QuestAvailableHere.RewardGold;
 
                             // Add the reward item to the player's inventory
@@ -356,7 +356,7 @@ namespace SuperAdventure_WPF.UI
                 message += "You defeated the " + _currentMonster.Name;
 
                 // Give player experience points for killing the monster
-                _player.ExperiencePoints += _currentMonster.RewardExperiencePoints;
+                _player.AddExperiencePoints(_currentMonster.RewardExperiencePoints);
                 message += Environment.NewLine;
                 message += "You receive " + _currentMonster.RewardExperiencePoints.ToString() + " experience points";
 
