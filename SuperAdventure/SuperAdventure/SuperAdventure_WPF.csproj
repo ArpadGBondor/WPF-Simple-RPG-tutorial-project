@@ -7,7 +7,7 @@
     <ProjectGuid>{077BFF28-3D2D-40C2-BB9D-26E2FED3CD35}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SuperAdventure</RootNamespace>
+    <RootNamespace>SuperAdventure_WPF</RootNamespace>
     <AssemblyName>SuperAdventure</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

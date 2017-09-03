@@ -1,20 +1,12 @@
-﻿using System;
+﻿using Engine;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using System.IO;
 
-using Engine;
 
-namespace SuperAdventure.UI
+namespace SuperAdventure_WPF.UI
 {
     /// <summary>
     /// Interaction logic for SuperAdventure.xaml
@@ -23,6 +15,8 @@ namespace SuperAdventure.UI
     {
         private Player _player;
         private Monster _currentMonster;
+
+        private const string PLAYER_DATA_FILE_NAME = "PlayerData.xml";
 
         public struct InventoryListElement
         {
@@ -40,9 +34,16 @@ namespace SuperAdventure.UI
         {
             InitializeComponent();
 
-            _player = new Player(10, 10, 20, 0);
-            _player.Inventory.Add(new InventoryItem(World.ItemByID(World.ITEM_ID_RUSTY_SWORD), 1));
-            MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
+            if (File.Exists(PLAYER_DATA_FILE_NAME))
+            {
+                _player = Player.CreatePlayerFromXmlString(File.ReadAllText(PLAYER_DATA_FILE_NAME));
+            }
+            else
+            {
+                _player = Player.CreateDefaultPlayer();
+            }
+
+            MoveTo(_player.CurrentLocation);
 
             UpdatePlayerInfoUI();
         }
@@ -171,7 +172,7 @@ namespace SuperAdventure.UI
                     foreach (QuestCompletionItem qci in newLocation.QuestAvailableHere.QuestCompletionItems)
                     {
                         message += qci.Quantity.ToString() + " "
-                            + (qci.Quantity == 1 ? qci.Details.Name : qci.Details.NamePlural) 
+                            + (qci.Quantity == 1 ? qci.Details.Name : qci.Details.NamePlural)
                             /*+ Environment.NewLine*/;
                     }
 
@@ -387,7 +388,7 @@ namespace SuperAdventure.UI
                     _player.AddItemToInventory(inventoryItem.Details);
 
                     message += Environment.NewLine;
-                    message += "You loot " + inventoryItem.Quantity.ToString() + " " 
+                    message += "You loot " + inventoryItem.Quantity.ToString() + " "
                         + (inventoryItem.Quantity == 1 ? inventoryItem.Details.Name : inventoryItem.Details.NamePlural);
                 }
 
@@ -442,7 +443,7 @@ namespace SuperAdventure.UI
             HealingPotion potion = (HealingPotion)cboPotions.SelectedItem;
 
             // Add healing amount to the player's current hit points
-            _player.CurrentHitPoints = 
+            _player.CurrentHitPoints =
                 Math.Min(_player.CurrentHitPoints + potion.AmountToHeal,
                     _player.MaximumHitPoints);
 
@@ -488,6 +489,11 @@ namespace SuperAdventure.UI
 
             // Display the messages
             LogMessage(message);
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            File.WriteAllText(PLAYER_DATA_FILE_NAME, _player.ToXmlString());
         }
     }
 }
