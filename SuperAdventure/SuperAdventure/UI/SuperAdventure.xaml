@@ -30,16 +30,22 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Hit points:" Margin="5" />
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Experience:" Margin="5" />
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Gold:" Margin="5" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Gold:" Margin="5" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Experience:" Margin="5" />
                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Level:" Margin="5" />
 
-                <TextBlock Grid.Row="0" Grid.Column="1" Name="lblHitPoints" Margin="5" />
-                <TextBlock Grid.Row="1" Grid.Column="2" Name="lblExperience" Margin="5" />
-                <TextBlock Grid.Row="2" Grid.Column="3" Name="lblGold" Margin="5" />
-                <TextBlock Grid.Row="3" Grid.Column="4" Name="lblLevel" Margin="5" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Name="lblHitPoints" Margin="5">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0}/{1}">
+                            <Binding Path="CurrentHitPoints" />
+                            <Binding Path="MaximumHitPoints" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="1" Name="lblGold" Margin="5" Text="{Binding Gold}"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Name="lblExperience" Margin="5" Text="{Binding ExperiencePoints}"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Name="lblLevel" Margin="5" Text="{Binding Level}"/>
             </Grid>
-
 
             <ListView x:Name="dgvInventory" 
                       Grid.Row="1"

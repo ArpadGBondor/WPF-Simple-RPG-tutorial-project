@@ -32,8 +32,6 @@ namespace SuperAdventure_WPF.UI
 
         public SuperAdventure()
         {
-            InitializeComponent();
-
             if (File.Exists(PLAYER_DATA_FILE_NAME))
             {
                 _player = Player.CreatePlayerFromXmlString(File.ReadAllText(PLAYER_DATA_FILE_NAME));
@@ -43,18 +41,20 @@ namespace SuperAdventure_WPF.UI
                 _player = Player.CreateDefaultPlayer();
             }
 
+            this.DataContext = _player;
+
+            InitializeComponent();
+
             MoveTo(_player.CurrentLocation);
-
-            UpdatePlayerInfoUI();
         }
 
-        private void UpdatePlayerInfoUI()
-        {
-            lblHitPoints.Text = _player.CurrentHitPoints.ToString() + "/" + _player.MaximumHitPoints.ToString();
-            lblGold.Text = _player.Gold.ToString();
-            lblExperience.Text = _player.ExperiencePoints.ToString();
-            lblLevel.Text = _player.Level.ToString();
-        }
+        //private void UpdatePlayerInfoUI()
+        //{
+        //    lblHitPoints.Text = _player.CurrentHitPoints.ToString() + "/" + _player.MaximumHitPoints.ToString();
+        //    lblGold.Text = _player.Gold.ToString();
+        //    lblExperience.Text = _player.ExperiencePoints.ToString();
+        //    lblLevel.Text = _player.Level.ToString();
+        //}
 
         private void btnNorth_Click(object sender, RoutedEventArgs e)
         {
@@ -114,7 +114,7 @@ namespace SuperAdventure_WPF.UI
             _player.CurrentHitPoints = _player.MaximumHitPoints;
 
             // Update Hit Points in UI
-            UpdatePlayerInfoUI();
+            //UpdatePlayerInfoUI();
 
             // Does the location have a quest?
             if (newLocation.QuestAvailableHere != null)
@@ -400,7 +400,7 @@ namespace SuperAdventure_WPF.UI
                 }
 
                 // Refresh player information and inventory controls
-                UpdatePlayerInfoUI();
+                //UpdatePlayerInfoUI();
                 UpdateInventoryListInUI();
                 UpdateWeaponListInUI();
                 UpdatePotionListInUI();
@@ -424,7 +424,7 @@ namespace SuperAdventure_WPF.UI
                 _player.CurrentHitPoints -= damageToPlayer;
 
                 // Refresh player data in UI
-                UpdatePlayerInfoUI();
+                //UpdatePlayerInfoUI();
 
                 if (_player.CurrentHitPoints <= 0)
                 {
@@ -490,7 +490,7 @@ namespace SuperAdventure_WPF.UI
             }
 
             // Refresh player data in UI
-            UpdatePlayerInfoUI();
+            //UpdatePlayerInfoUI();
             UpdateInventoryListInUI();
             UpdatePotionListInUI();
 

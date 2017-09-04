@@ -26,17 +26,12 @@ namespace SuperAdventure_WinForms
                 _player = Player.CreateDefaultPlayer();
             }
 
+            lblHitPoints.DataBindings.Add("Text", _player, "ShowHitPoints");
+            lblGold.DataBindings.Add("Text", _player, "Gold");
+            lblExperience.DataBindings.Add("Text", _player, "ExperiencePoints");
+            lblLevel.DataBindings.Add("Text", _player, "Level");
+
             MoveTo(_player.CurrentLocation);
-
-            UpdatePlayerInfoUI();
-        }
-
-        public void UpdatePlayerInfoUI()
-        {
-            lblHitPoints.Text = _player.CurrentHitPoints.ToString() + "/" + _player.MaximumHitPoints.ToString();
-            lblGold.Text = _player.Gold.ToString();
-            lblExperience.Text = _player.ExperiencePoints.ToString();
-            lblLevel.Text = _player.Level.ToString();
         }
 
         private void btnNorth_Click(object sender, EventArgs e)
@@ -83,9 +78,6 @@ namespace SuperAdventure_WinForms
 
             // Completely heal the player
             _player.CurrentHitPoints = _player.MaximumHitPoints;
-
-            // Update Hit Points in UI
-            UpdatePlayerInfoUI();
 
             // Does the location have a quest?
             if (newLocation.QuestAvailableHere != null)
@@ -272,7 +264,6 @@ namespace SuperAdventure_WinForms
                 }
 
                 // Refresh player information and inventory controls
-                UpdatePlayerInfoUI();
                 UpdateInventoryListInUI();
                 UpdateWeaponListInUI();
                 UpdatePotionListInUI();
@@ -296,8 +287,6 @@ namespace SuperAdventure_WinForms
                 // Subtract damage from player
                 _player.CurrentHitPoints -= damageToPlayer;
 
-                // Refresh player data in UI
-                UpdatePlayerInfoUI();
 
                 if (_player.CurrentHitPoints <= 0)
                 {
@@ -360,7 +349,6 @@ namespace SuperAdventure_WinForms
             }
 
             // Refresh player data in UI
-            UpdatePlayerInfoUI();
             UpdateInventoryListInUI();
             UpdatePotionListInUI();
 
