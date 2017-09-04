@@ -18,18 +18,6 @@ namespace SuperAdventure_WPF.UI
 
         private const string PLAYER_DATA_FILE_NAME = "PlayerData.xml";
 
-        public struct InventoryListElement
-        {
-            public string Name { get; set; }
-            public int Quantity { get; set; }
-        }
-
-        public struct QuestListElement
-        {
-            public string Name { get; set; }
-            public bool IsDone { get; set; }
-        }
-
         public SuperAdventure()
         {
             if (File.Exists(PLAYER_DATA_FILE_NAME))
@@ -47,14 +35,6 @@ namespace SuperAdventure_WPF.UI
 
             MoveTo(_player.CurrentLocation);
         }
-
-        //private void UpdatePlayerInfoUI()
-        //{
-        //    lblHitPoints.Text = _player.CurrentHitPoints.ToString() + "/" + _player.MaximumHitPoints.ToString();
-        //    lblGold.Text = _player.Gold.ToString();
-        //    lblExperience.Text = _player.ExperiencePoints.ToString();
-        //    lblLevel.Text = _player.Level.ToString();
-        //}
 
         private void btnNorth_Click(object sender, RoutedEventArgs e)
         {
@@ -112,9 +92,6 @@ namespace SuperAdventure_WPF.UI
 
             // Completely heal the player
             _player.CurrentHitPoints = _player.MaximumHitPoints;
-
-            // Update Hit Points in UI
-            //UpdatePlayerInfoUI();
 
             // Does the location have a quest?
             if (newLocation.QuestAvailableHere != null)
@@ -215,56 +192,11 @@ namespace SuperAdventure_WPF.UI
                 btnUsePotion.Visibility = Visibility.Hidden;
             }
 
-
-            // Refresh player's inventory list
-            UpdateInventoryListInUI();
-
-            // Refresh player's quest list
-            UpdateQuestListInUI();
-
             // Refresh player's weapons combobox
             UpdateWeaponListInUI();
 
             // Refresh player's potions combobox
             UpdatePotionListInUI();
-        }
-
-
-        private void UpdateInventoryListInUI()
-        {
-            var inventoryList = new List<InventoryListElement>();
-
-            foreach (InventoryItem inventoryItem in _player.Inventory)
-            {
-                if (inventoryItem.Quantity > 0)
-                {
-                    inventoryList.Add(
-                        new InventoryListElement()
-                        {
-                            Name = inventoryItem.Details.Name,
-                            Quantity = inventoryItem.Quantity
-                        });
-                }
-            }
-
-            dgvInventory.ItemsSource = inventoryList;
-        }
-
-        private void UpdateQuestListInUI()
-        {
-            var questList = new List<QuestListElement>();
-
-            foreach (PlayerQuest playerQuest in _player.Quests)
-            {
-                questList.Add(
-                    new QuestListElement()
-                    {
-                        Name = playerQuest.Details.Name,
-                        IsDone = playerQuest.IsCompleted
-                    });
-            }
-
-            dgvQuests.ItemsSource = questList;
         }
 
         private void UpdateWeaponListInUI()
@@ -400,8 +332,6 @@ namespace SuperAdventure_WPF.UI
                 }
 
                 // Refresh player information and inventory controls
-                //UpdatePlayerInfoUI();
-                UpdateInventoryListInUI();
                 UpdateWeaponListInUI();
                 UpdatePotionListInUI();
 
@@ -422,9 +352,6 @@ namespace SuperAdventure_WPF.UI
 
                 // Subtract damage from player
                 _player.CurrentHitPoints -= damageToPlayer;
-
-                // Refresh player data in UI
-                //UpdatePlayerInfoUI();
 
                 if (_player.CurrentHitPoints <= 0)
                 {
@@ -490,8 +417,6 @@ namespace SuperAdventure_WPF.UI
             }
 
             // Refresh player data in UI
-            //UpdatePlayerInfoUI();
-            UpdateInventoryListInUI();
             UpdatePotionListInUI();
 
             // Display the messages

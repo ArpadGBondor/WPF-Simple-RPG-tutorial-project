@@ -52,10 +52,11 @@
                       IsEnabled="False"
                       SelectionMode="Single"
                       ScrollViewer.CanContentScroll="True"
-                      Margin="5">
+                      Margin="5" 
+                      ItemsSource="{Binding Inventory}">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn  Header="Name" Width="197" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn  Header="Name" Width="197" DisplayMemberBinding="{Binding Description}"/>
                         <GridViewColumn  Header="Quantity" DisplayMemberBinding="{Binding Quantity}"/>
                     </GridView>
                 </ListView.View>
@@ -66,11 +67,12 @@
                       IsEnabled="False"
                       SelectionMode="Single"
                       ScrollViewer.CanContentScroll="True"
-                      Margin="5">
+                      Margin="5"
+                      ItemsSource="{Binding Quests}" >
                 <ListView.View>
                     <GridView>
                         <GridViewColumn  Header="Name" Width="197" DisplayMemberBinding="{Binding Name}"/>
-                        <GridViewColumn  Header="Done?" DisplayMemberBinding="{Binding IsDone}"/>
+                        <GridViewColumn  Header="Done?" DisplayMemberBinding="{Binding IsCompleted}"/>
                     </GridView>
                 </ListView.View>
             </ListView>
