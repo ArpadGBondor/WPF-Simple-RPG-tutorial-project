@@ -310,6 +310,6 @@
          private System.Windows.Forms.RichTextBox rtbMessages;
          private System.Windows.Forms.DataGridView dgvInventory;
          private System.Windows.Forms.DataGridView dgvQuests;
-     }
+    }
  }
  
