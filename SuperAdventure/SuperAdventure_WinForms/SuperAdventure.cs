@@ -406,9 +406,16 @@ namespace SuperAdventure_WinForms
         {
             if (propertyChangedEventArgs.PropertyName == "Weapons")
             {
-                cboWeapons.DataSource = _player.Weapons;
+                Weapon playerWeapon = _player.CurrentWeapon;
+                List<Weapon> weaponList = _player.Weapons;
+                cboWeapons.DataSource = weaponList;
 
-                if (!_player.Weapons.Any())
+                if (weaponList.Where(p => p.ID == playerWeapon.ID).Any())
+                {
+                    cboWeapons.SelectedItem = playerWeapon;
+                }
+
+                if (!weaponList.Any())
                 {
                     cboWeapons.Visible = false;
                     btnUseWeapon.Visible = false;

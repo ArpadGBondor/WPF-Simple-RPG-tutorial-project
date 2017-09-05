@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Documents;
 using System.IO;
-
+using System.Linq;
+using System.ComponentModel;
 
 namespace SuperAdventure_WPF.UI
 {
@@ -29,9 +30,23 @@ namespace SuperAdventure_WPF.UI
                 _player = Player.CreateDefaultPlayer();
             }
 
+            // a new function to update the combobox data when the player’s inventory changes.
+            _player.PropertyChanged += PlayerOnPropertyChanged;
+
             this.DataContext = _player;
 
             InitializeComponent();
+
+            // Set selected item in the combo boxes
+            if (_player.CurrentWeapon != null)
+            {
+                cboWeapons.SelectedItem = _player.CurrentWeapon;
+            }
+            else
+            {
+                cboWeapons.SelectedIndex = 0;
+            }
+            cboPotions.SelectedIndex = 0;
 
             MoveTo(_player.CurrentLocation);
         }
@@ -177,10 +192,10 @@ namespace SuperAdventure_WPF.UI
                     _currentMonster.LootTable.Add(lootItem);
                 }
 
-                cboWeapons.Visibility = Visibility.Visible;
-                cboPotions.Visibility = Visibility.Visible;
-                btnUseWeapon.Visibility = Visibility.Visible;
-                btnUsePotion.Visibility = Visibility.Visible;
+                cboWeapons.Visibility   = (_player.Weapons.Any() ? Visibility.Visible : Visibility.Hidden);
+                cboPotions.Visibility   = (_player.Potions.Any() ? Visibility.Visible : Visibility.Hidden);
+                btnUseWeapon.Visibility = (_player.Weapons.Any() ? Visibility.Visible : Visibility.Hidden);
+                btnUsePotion.Visibility = (_player.Potions.Any() ? Visibility.Visible : Visibility.Hidden);
             }
             else
             {
@@ -190,75 +205,6 @@ namespace SuperAdventure_WPF.UI
                 cboPotions.Visibility = Visibility.Hidden;
                 btnUseWeapon.Visibility = Visibility.Hidden;
                 btnUsePotion.Visibility = Visibility.Hidden;
-            }
-
-            // Refresh player's weapons combobox
-            UpdateWeaponListInUI();
-
-            // Refresh player's potions combobox
-            UpdatePotionListInUI();
-        }
-
-        private void UpdateWeaponListInUI()
-        {
-            List<Weapon> weapons = new List<Weapon>();
-
-            foreach (InventoryItem inventoryItem in _player.Inventory)
-            {
-                if (inventoryItem.Details is Weapon)
-                {
-                    if (inventoryItem.Quantity > 0)
-                    {
-                        weapons.Add((Weapon)inventoryItem.Details);
-                    }
-                }
-            }
-
-            if (weapons.Count == 0)
-            {
-                // The player doesn't have any weapons, so hide the weapon combobox and "Use" button
-                cboWeapons.Visibility = Visibility.Hidden;
-                btnUseWeapon.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                cboWeapons.ItemsSource = weapons;
-                if (_player.CurrentWeapon != null)
-                {
-                    cboWeapons.SelectedItem = _player.CurrentWeapon;
-                }
-                else
-                {
-                    cboWeapons.SelectedIndex = 0;
-                }
-            }
-        }
-
-        private void UpdatePotionListInUI()
-        {
-            List<HealingPotion> healingPotions = new List<HealingPotion>();
-
-            foreach (InventoryItem inventoryItem in _player.Inventory)
-            {
-                if (inventoryItem.Details is HealingPotion)
-                {
-                    if (inventoryItem.Quantity > 0)
-                    {
-                        healingPotions.Add((HealingPotion)inventoryItem.Details);
-                    }
-                }
-            }
-
-            if (healingPotions.Count == 0)
-            {
-                // The player doesn't have any potions, so hide the potion combobox and "Use" button
-                cboPotions.Visibility = Visibility.Hidden;
-                btnUsePotion.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                cboPotions.ItemsSource = healingPotions;
-                cboPotions.SelectedIndex = 0;
             }
         }
 
@@ -331,11 +277,6 @@ namespace SuperAdventure_WPF.UI
                         + (inventoryItem.Quantity == 1 ? inventoryItem.Details.Name : inventoryItem.Details.NamePlural);
                 }
 
-                // Refresh player information and inventory controls
-                UpdateWeaponListInUI();
-                UpdatePotionListInUI();
-
-
                 // Move player to current location (to heal player and create a new monster to fight)
                 MoveTo(_player.CurrentLocation);
             }
@@ -382,14 +323,7 @@ namespace SuperAdventure_WPF.UI
                     _player.MaximumHitPoints);
 
             // Remove the potion from the player's inventory
-            foreach (InventoryItem ii in _player.Inventory)
-            {
-                if (ii.Details.ID == potion.ID)
-                {
-                    ii.Quantity--;
-                    break;
-                }
-            }
+            _player.RemoveItemFromInventory(potion, 1);
 
             // Display message
             message += "You drink a " + potion.Name;
@@ -416,9 +350,6 @@ namespace SuperAdventure_WPF.UI
                 MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
             }
 
-            // Refresh player data in UI
-            UpdatePotionListInUI();
-
             // Display the messages
             LogMessage(message);
         }
@@ -431,6 +362,38 @@ namespace SuperAdventure_WPF.UI
         private void cboWeapons_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             _player.CurrentWeapon = (Weapon)cboWeapons.SelectedItem;
+        }
+
+        private void PlayerOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            if (propertyChangedEventArgs.PropertyName == "Weapons")
+            {
+                Weapon playerWeapon = _player.CurrentWeapon;
+                List<Weapon> weaponList = _player.Weapons;
+                cboWeapons.ItemsSource = _player.Weapons;
+
+                if (weaponList.Where(p => p.ID == playerWeapon.ID).Any())
+                {
+                    cboWeapons.SelectedItem = playerWeapon;
+                }
+
+                if (!weaponList.Any())
+                {
+                    cboWeapons.Visibility = Visibility.Hidden;
+                    btnUseWeapon.Visibility = Visibility.Hidden;
+                }
+            }
+
+            if (propertyChangedEventArgs.PropertyName == "Potions")
+            {
+                cboPotions.ItemsSource = _player.Potions;
+
+                if (!_player.Potions.Any())
+                {
+                    cboPotions.Visibility = Visibility.Hidden;
+                    btnUsePotion.Visibility = Visibility.Hidden;
+                }
+            }
         }
     }
 }

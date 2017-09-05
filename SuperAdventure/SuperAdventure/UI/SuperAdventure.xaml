@@ -141,8 +141,8 @@
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="Select action" Margin="5" />
                 <Button Grid.Row="1" Grid.Column="1" Name="btnUseWeapon" Content="Use" Margin="5" Click="btnUseWeapon_Click" />
                 <Button Grid.Row="2" Grid.Column="1" Name="btnUsePotion" Content="Use" Margin="5" Click="btnUsePotion_Click" />
-                <ComboBox Grid.Row="1" Grid.Column="0" Name="cboWeapons" DisplayMemberPath="Name" SelectedValuePath="ID" Margin="5" SelectionChanged="cboWeapons_SelectionChanged" />
-                <ComboBox Grid.Row="2" Grid.Column="0" Name="cboPotions" DisplayMemberPath="Name" SelectedValuePath="ID" Margin="5" />
+                <ComboBox Grid.Row="1" Grid.Column="0" Name="cboWeapons" ItemsSource="{Binding Weapons}" DisplayMemberPath="Name" SelectedValuePath="ID" Margin="5" SelectionChanged="cboWeapons_SelectionChanged" />
+                <ComboBox Grid.Row="2" Grid.Column="0" Name="cboPotions" ItemsSource="{Binding Potions}" DisplayMemberPath="Name" SelectedValuePath="ID" Margin="5" />
             </Grid>
         </Grid>
     </Grid>

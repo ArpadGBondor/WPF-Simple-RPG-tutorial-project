@@ -42,13 +42,13 @@ namespace Engine
         {
             get
             {
-                MessageBox.Show(_currentWeapon.Name,"Weapon out");
+                // MessageBox.Show(_currentWeapon.Name,"Weapon out");
                 return _currentWeapon;
             }
             set
             {
                 _currentWeapon = value;
-                MessageBox.Show(_currentWeapon.Name, "Weapon in");
+                // MessageBox.Show(_currentWeapon.Name, "Weapon in");
                 OnPropertyChanged("CurrentWeapon");
             }
         }
