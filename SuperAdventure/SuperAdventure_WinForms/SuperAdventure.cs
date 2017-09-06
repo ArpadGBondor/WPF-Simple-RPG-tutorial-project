@@ -145,16 +145,18 @@ namespace SuperAdventure_WinForms
         {
             if (propertyChangedEventArgs.PropertyName == "Weapons")
             {
-                Weapon playerWeapon = _player.CurrentWeapon;
-                List<Weapon> weaponList = _player.Weapons;
-                cboWeapons.DataSource = weaponList;
+                Weapon previouslySelectedWeapon = _player.CurrentWeapon;
 
-                if (weaponList.Where(p => p.ID == playerWeapon.ID).Any())
+                cboWeapons.DataSource = _player.Weapons;
+
+                // Handle the possibility that the player does not have any weapons, or sold their weapon.
+                if (previouslySelectedWeapon != null &&
+                _player.Weapons.Exists(w => w.ID == previouslySelectedWeapon.ID))
                 {
-                    cboWeapons.SelectedItem = playerWeapon;
+                    cboWeapons.SelectedItem = previouslySelectedWeapon;
                 }
 
-                if (!weaponList.Any())
+                if (!_player.Weapons.Any())
                 {
                     cboWeapons.Visible = false;
                     btnUseWeapon.Visible = false;
