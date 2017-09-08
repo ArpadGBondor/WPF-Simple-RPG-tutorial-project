@@ -83,6 +83,7 @@
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <RichTextBox Grid.Row="0" 
@@ -114,9 +115,9 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
                 <Button Grid.Row="0"
                         Grid.Column="2"
@@ -139,7 +140,7 @@
                         Content="South" 
                         Margin="5" Click="btnSouth_Click"/>
             </Grid>
-            <Grid Grid.Row="4" Margin="10" >
+            <Grid Grid.Row="3" Margin="10" >
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition />
@@ -155,6 +156,19 @@
                 <Button Grid.Row="2" Grid.Column="1" Name="btnUsePotion" Content="Use" Margin="5" Click="btnUsePotion_Click" />
                 <ComboBox Grid.Row="1" Grid.Column="0" Name="cboWeapons" ItemsSource="{Binding Weapons}" DisplayMemberPath="Name" SelectedValuePath="ID" Margin="5" SelectionChanged="cboWeapons_SelectionChanged" />
                 <ComboBox Grid.Row="2" Grid.Column="0" Name="cboPotions" ItemsSource="{Binding Potions}" DisplayMemberPath="Name" SelectedValuePath="ID" Margin="5" />
+            </Grid>
+            <Grid Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="2"
+                    Name="btnTrade"
+                    Content="Trade" 
+                    Margin="5" Click="btnTrade_Click"/>
             </Grid>
         </Grid>
     </Grid>

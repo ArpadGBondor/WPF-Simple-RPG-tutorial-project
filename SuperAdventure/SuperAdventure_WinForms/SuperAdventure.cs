@@ -215,5 +215,9 @@ namespace SuperAdventure_WinForms
             rtbMessages.SelectionStart = rtbMessages.Text.Length;
             rtbMessages.ScrollToCaret();
         }
+
+        private void btnTrade_Click(object sender, EventArgs e)
+        {
+        }
     }
 }

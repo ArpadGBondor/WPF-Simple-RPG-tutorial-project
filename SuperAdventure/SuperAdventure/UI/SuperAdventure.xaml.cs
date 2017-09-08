@@ -181,5 +181,10 @@ namespace SuperAdventure_WPF.UI
                 LogMessage("");
             }
         }
+
+        private void btnTrade_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
