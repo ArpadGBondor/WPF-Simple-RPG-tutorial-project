@@ -171,6 +171,8 @@ namespace SuperAdventure_WPF.UI
                     btnUseWeapon.Visibility = (_player.Weapons.Any() ? Visibility.Visible : Visibility.Hidden);
                     btnUsePotion.Visibility = (_player.Potions.Any() ? Visibility.Visible : Visibility.Hidden);
                 }
+
+                btnTrade.Visibility = (_player.CurrentLocation.VendorWorkingHere != null ? Visibility.Visible : Visibility.Hidden);
             }
         }
         private void DisplayMessage(object sender, MessageEventArgs messageEventArgs)
@@ -184,7 +186,10 @@ namespace SuperAdventure_WPF.UI
 
         private void btnTrade_Click(object sender, RoutedEventArgs e)
         {
-
+            TradingScreen tradingScreen = new TradingScreen(_player);
+            tradingScreen.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            tradingScreen.Owner = this;
+            tradingScreen.ShowDialog();
         }
     }
 }
