@@ -242,7 +242,7 @@ namespace Engine
             MaximumHitPoints = (Level * 10);
         }
 
-        public bool HasRequiredItemToEnterThisLocation(Location location)
+        public bool PlayerHasRequiredItemToEnterThisLocation(Location location)
         {
             if (location.ItemRequiredToEnter == null)
             {
@@ -254,25 +254,25 @@ namespace Engine
             return Inventory.Any(ii => ii.Details.ID == location.ItemRequiredToEnter.ID);
         }
 
-        public bool HasThisQuest(Quest quest)
+        public bool PlayerHasThisQuest(Quest quest)
         {
             return Quests.Any(pq => pq.Details.ID == quest.ID);
         }
 
-        public bool CompletedThisQuest(Quest quest)
+        public bool PlayerNotCompletedThisQuest(Quest quest)
         {
             foreach (PlayerQuest playerQuest in Quests)
             {
                 if (playerQuest.Details.ID == quest.ID)
                 {
-                    return playerQuest.IsCompleted;
+                    return !playerQuest.IsCompleted;
                 }
             }
 
-            return false;
+            return true;
         }
 
-        public bool HasAllQuestCompletionItems(Quest quest)
+        public bool PlayerHasAllQuestCompletionItems(Quest quest)
         {
             // See if the player has all the items needed to complete the quest here
             foreach (QuestCompletionItem qci in quest.QuestCompletionItems)
@@ -375,96 +375,52 @@ namespace Engine
             }
         }
 
-        public void MoveTo(Location newLocation)
+        public void MoveTo(Location location)
         {
             //Does the location have any required items
-            if (!HasRequiredItemToEnterThisLocation(newLocation))
+            if (!PlayerHasRequiredItemToEnterThisLocation(location))
             {
-                RaiseMessage("You must have a " + newLocation.ItemRequiredToEnter.Name + " to enter this location.", true);
+                RaiseMessage("You must have a " + location.ItemRequiredToEnter.Name + " to enter this location.", true);
                 return;
             }
 
             // Update the player's current location
-            CurrentLocation = newLocation;
+            CurrentLocation = location;
 
             // Completely heal the player
-            CurrentHitPoints = MaximumHitPoints;
+            CompletelyHeal();
 
             // Does the location have a quest?
-            if (newLocation.QuestAvailableHere != null)
+            if (location.IsQuestAvailableHere)
             {
-                // See if the player already has the quest, and if they've completed it
-                bool playerAlreadyHasQuest = HasThisQuest(newLocation.QuestAvailableHere);
-                bool playerAlreadyCompletedQuest = CompletedThisQuest(newLocation.QuestAvailableHere);
-
                 // See if the player already has the quest
-                if (playerAlreadyHasQuest)
+                if (PlayerHasThisQuest(location.QuestAvailableHere))
                 {
-                    // If the player has not completed the quest yet
-                    if (!playerAlreadyCompletedQuest)
+                    // If the player has not completed the quest yet, and
+                    // The player has all items required to complete the quest
+                    if (PlayerNotCompletedThisQuest(location.QuestAvailableHere) &&
+                        PlayerHasAllQuestCompletionItems(location.QuestAvailableHere))
                     {
-                        // See if the player has all the items needed to complete the quest
-                        bool playerHasAllItemsToCompleteQuest = HasAllQuestCompletionItems(newLocation.QuestAvailableHere);
-
-                        // The player has all items required to complete the quest
-                        if (playerHasAllItemsToCompleteQuest)
-                        {
-                            // Display message
-                            RaiseMessage("You complete the '" + newLocation.QuestAvailableHere.Name + "' quest.", false);
-
-                            // Remove quest items from inventory
-                            RemoveQuestCompletionItems(newLocation.QuestAvailableHere);
-
-                            // Give quest rewards
-                            RaiseMessage("You receive: ", false);
-                            RaiseMessage(newLocation.QuestAvailableHere.RewardExperiencePoints.ToString() + " experience points", false);
-                            RaiseMessage(newLocation.QuestAvailableHere.RewardGold.ToString() + " gold", false);
-                            RaiseMessage(newLocation.QuestAvailableHere.RewardItem.Name, true);
-
-                            AddExperiencePoints(newLocation.QuestAvailableHere.RewardExperiencePoints);
-                            Gold += newLocation.QuestAvailableHere.RewardGold;
-
-                            // Add the reward item to the player's inventory
-                            AddItemToInventory(newLocation.QuestAvailableHere.RewardItem);
-
-                            // Mark the quest as completed
-                            MarkQuestCompleted(newLocation.QuestAvailableHere);
-                        }
+                        GivePlayerQuestRewards(location.QuestAvailableHere);
                     }
                 }
                 else
                 {
-                    // The player does not already have the quest
-
-                    // Display the messages
-                    RaiseMessage("You receive the " + newLocation.QuestAvailableHere.Name + " quest.", false);
-                    RaiseMessage(newLocation.QuestAvailableHere.Description, false);
-                    RaiseMessage("To complete it, return with:", false);
-                    foreach (QuestCompletionItem qci in newLocation.QuestAvailableHere.QuestCompletionItems)
-                    {
-                        if (qci.Quantity == 1)
-                        {
-                            RaiseMessage(qci.Quantity.ToString() + " " + qci.Details.Name, false);
-                        }
-                        else
-                        {
-                            RaiseMessage(qci.Quantity.ToString() + " " + qci.Details.NamePlural, false);
-                        }
-                    }
-                    RaiseMessage("", false);
-
-                    // Add the quest to the player's quest list
-                    Quests.Add(new PlayerQuest(newLocation.QuestAvailableHere));
+                    GiveQuestToPlayer(location.QuestAvailableHere);
                 }
             }
 
-            // Does the location have a monster?
-            if (newLocation.MonsterLivingHere != null)
+            SetTheCurrentMonsterForTheCurrentLocation(location);
+        }
+
+        private void SetTheCurrentMonsterForTheCurrentLocation(Location location)
+        {
+            if (location.IsMonsterLivingHere)
             {
-                RaiseMessage("You see a " + newLocation.MonsterLivingHere.Name, true);
+                RaiseMessage("You see a " + location.MonsterLivingHere.Name, true);
 
                 // Make a new monster, using the values from the standard monster in the World.Monster list
-                Monster standardMonster = World.MonsterByID(newLocation.MonsterLivingHere.ID);
+                Monster standardMonster = World.MonsterByID(location.MonsterLivingHere.ID);
 
                 _currentMonster = new Monster(standardMonster.ID, standardMonster.Name, standardMonster.MaximumDamage,
                     standardMonster.RewardExperiencePoints, standardMonster.RewardGold, standardMonster.CurrentHitPoints, standardMonster.MaximumHitPoints);
@@ -480,9 +436,56 @@ namespace Engine
             }
         }
 
+        private void GiveQuestToPlayer(Quest quest)
+        {
+            // Display the messages
+            RaiseMessage("You receive the " + quest.Name + " quest.", false);
+            RaiseMessage(quest.Description, false);
+            RaiseMessage("To complete it, return with:", false);
+            foreach (QuestCompletionItem qci in quest.QuestCompletionItems)
+            {
+                if (qci.Quantity == 1)
+                {
+                    RaiseMessage(qci.Quantity.ToString() + " " + qci.Details.Name, false);
+                }
+                else
+                {
+                    RaiseMessage(qci.Quantity.ToString() + " " + qci.Details.NamePlural, false);
+                }
+            }
+            RaiseMessage("", false);
+
+            // Add the quest to the player's quest list
+            Quests.Add(new PlayerQuest(quest));
+        }
+
+        private void GivePlayerQuestRewards(Quest quest)
+        {
+            // Display message
+            RaiseMessage("You complete the '" + quest.Name + "' quest.", false);
+
+            // Remove quest items from inventory
+            RemoveQuestCompletionItems(quest);
+
+            // Give quest rewards
+            RaiseMessage("You receive: ", false);
+            RaiseMessage(quest.RewardExperiencePoints.ToString() + " experience points", false);
+            RaiseMessage(quest.RewardGold.ToString() + " gold", false);
+            RaiseMessage(quest.RewardItem.Name, true);
+
+            AddExperiencePoints(quest.RewardExperiencePoints);
+            Gold += quest.RewardGold;
+
+            // Add the reward item to the player's inventory
+            AddItemToInventory(quest.RewardItem);
+
+            // Mark the quest as completed
+            MarkQuestCompleted(quest);
+        }
+
         public void MoveNorth()
         {
-            if (CurrentLocation.LocationToNorth != null)
+            if (CurrentLocation.HasPathToNorth)
             {
                 MoveTo(CurrentLocation.LocationToNorth);
             }
@@ -490,7 +493,7 @@ namespace Engine
 
         public void MoveEast()
         {
-            if (CurrentLocation.LocationToEast != null)
+            if (CurrentLocation.HasPathToEast)
             {
                 MoveTo(CurrentLocation.LocationToEast);
             }
@@ -498,7 +501,7 @@ namespace Engine
 
         public void MoveSouth()
         {
-            if (CurrentLocation.LocationToSouth != null)
+            if (CurrentLocation.HasPathToSouth)
             {
                 MoveTo(CurrentLocation.LocationToSouth);
             }
@@ -506,7 +509,7 @@ namespace Engine
 
         public void MoveWest()
         {
-            if (CurrentLocation.LocationToWest != null)
+            if (CurrentLocation.HasPathToWest)
             {
                 MoveTo(CurrentLocation.LocationToWest);
             }

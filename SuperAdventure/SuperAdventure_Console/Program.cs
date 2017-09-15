@@ -63,7 +63,7 @@ namespace SuperAdventure_Console
             {
                 DisplayCurrentLocation();
 
-                if (_player.CurrentLocation.VendorWorkingHere != null)
+                if (_player.CurrentLocation.IsVendorWorkingHere)
                 {
                     Console.WriteLine("You see a vendor here: {0}", _player.CurrentLocation.VendorWorkingHere.Name);
                 }
@@ -116,7 +116,7 @@ namespace SuperAdventure_Console
             }
             else if (input.Contains("north"))
             {
-                if (_player.CurrentLocation.LocationToNorth == null)
+                if (!_player.CurrentLocation.HasPathToNorth)
                 {
                     Console.WriteLine("You cannot move North");
                 }
@@ -127,7 +127,7 @@ namespace SuperAdventure_Console
             }
             else if (input.Contains("east"))
             {
-                if (_player.CurrentLocation.LocationToEast == null)
+                if (!_player.CurrentLocation.HasPathToEast)
                 {
                     Console.WriteLine("You cannot move East");
                 }
@@ -138,7 +138,7 @@ namespace SuperAdventure_Console
             }
             else if (input.Contains("south"))
             {
-                if (_player.CurrentLocation.LocationToSouth == null)
+                if (!_player.CurrentLocation.HasPathToSouth)
                 {
                     Console.WriteLine("You cannot move South");
                 }
@@ -149,7 +149,7 @@ namespace SuperAdventure_Console
             }
             else if (input.Contains("west"))
             {
-                if (_player.CurrentLocation.LocationToWest == null)
+                if (!_player.CurrentLocation.HasPathToWest)
                 {
                     Console.WriteLine("You cannot move West");
                 }
@@ -182,7 +182,7 @@ namespace SuperAdventure_Console
             }
             else if (input.Contains("attack"))
             {
-                if (_player.CurrentLocation.MonsterLivingHere == null)
+                if (!_player.CurrentLocation.IsMonsterLivingHere)
                 {
                     Console.WriteLine("There is nothing here to attack");
                 }
@@ -257,7 +257,7 @@ namespace SuperAdventure_Console
             }
             else if (input == "trade")
             {
-                if (_player.CurrentLocation.VendorWorkingHere == null)
+                if (!_player.CurrentLocation.IsVendorWorkingHere)
                 {
                     Console.WriteLine("There is no vendor here");
                 }
@@ -300,7 +300,7 @@ namespace SuperAdventure_Console
             }
             else if (input.StartsWith("buy "))
             {
-                if (_player.CurrentLocation.VendorWorkingHere == null)
+                if (!_player.CurrentLocation.IsVendorWorkingHere)
                 {
                     Console.WriteLine("There is no vendor at this location");
                 }
@@ -345,7 +345,7 @@ namespace SuperAdventure_Console
             }
             else if (input.StartsWith("sell "))
             {
-                if (_player.CurrentLocation.VendorWorkingHere == null)
+                if (!_player.CurrentLocation.IsVendorWorkingHere)
                 {
                     Console.WriteLine("There is no vendor at this location");
                 }

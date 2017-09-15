@@ -28,6 +28,11 @@ namespace Engine
             }
         }
 
+        protected void CompletelyHeal()
+        {
+            CurrentHitPoints = MaximumHitPoints;
+        }
+
         public string ShowHitPoints
         {
             get { return _currentHitPoints.ToString() + "/" + _maximumHitPoints.ToString(); }

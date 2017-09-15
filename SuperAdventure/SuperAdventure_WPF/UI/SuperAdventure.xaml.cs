@@ -155,30 +155,30 @@ namespace SuperAdventure_WPF.UI
             if (propertyChangedEventArgs.PropertyName == "CurrentLocation")
             {
                 // Show/hide available movement buttons
-                btnNorth.Visibility = (_player.CurrentLocation.LocationToNorth != null ? Visibility.Visible : Visibility.Hidden);
-                btnEast.Visibility = (_player.CurrentLocation.LocationToEast != null ? Visibility.Visible : Visibility.Hidden);
-                btnSouth.Visibility = (_player.CurrentLocation.LocationToSouth != null ? Visibility.Visible : Visibility.Hidden);
-                btnWest.Visibility = (_player.CurrentLocation.LocationToWest != null ? Visibility.Visible : Visibility.Hidden);
+                btnNorth.Visibility = (_player.CurrentLocation.HasPathToNorth ? Visibility.Visible : Visibility.Hidden);
+                btnEast.Visibility = (_player.CurrentLocation.HasPathToEast ? Visibility.Visible : Visibility.Hidden);
+                btnSouth.Visibility = (_player.CurrentLocation.HasPathToSouth ? Visibility.Visible : Visibility.Hidden);
+                btnWest.Visibility = (_player.CurrentLocation.HasPathToWest ? Visibility.Visible : Visibility.Hidden);
 
                 // Display current location name and description
                 LogLocation(_player.CurrentLocation.Name, _player.CurrentLocation.Description);
 
-                if (_player.CurrentLocation.MonsterLivingHere == null)
-                {
-                    cboWeapons.Visibility = Visibility.Hidden;
-                    cboPotions.Visibility = Visibility.Hidden;
-                    btnUseWeapon.Visibility = Visibility.Hidden;
-                    btnUsePotion.Visibility = Visibility.Hidden;
-                }
-                else
+                if (_player.CurrentLocation.IsMonsterLivingHere)
                 {
                     cboWeapons.Visibility = (_player.Weapons.Any() ? Visibility.Visible : Visibility.Hidden);
                     cboPotions.Visibility = (_player.Potions.Any() ? Visibility.Visible : Visibility.Hidden);
                     btnUseWeapon.Visibility = (_player.Weapons.Any() ? Visibility.Visible : Visibility.Hidden);
                     btnUsePotion.Visibility = (_player.Potions.Any() ? Visibility.Visible : Visibility.Hidden);
                 }
+                else
+                {
+                    cboWeapons.Visibility = Visibility.Hidden;
+                    cboPotions.Visibility = Visibility.Hidden;
+                    btnUseWeapon.Visibility = Visibility.Hidden;
+                    btnUsePotion.Visibility = Visibility.Hidden;
+                }
 
-                btnTrade.Visibility = (_player.CurrentLocation.VendorWorkingHere != null ? Visibility.Visible : Visibility.Hidden);
+                btnTrade.Visibility = (_player.CurrentLocation.IsVendorWorkingHere ? Visibility.Visible : Visibility.Hidden);
             }
         }
         private void DisplayMessage(object sender, MessageEventArgs messageEventArgs)
