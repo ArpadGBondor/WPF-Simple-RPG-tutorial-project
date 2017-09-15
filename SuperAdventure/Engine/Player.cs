@@ -145,9 +145,11 @@ namespace Engine
             }
         }
 
-        public static Player CreatePlayerFromDatabase(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints, int currentLocationID)
+        public static Player CreatePlayerFromDatabase(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints, int currentLocationID, int currentWeaponID)
         {
             Player player = new Player(currentHitPoints, maximumHitPoints, gold, experiencePoints);
+
+            player.CurrentWeapon = (Weapon)World.ItemByID(currentWeaponID);
 
             player.MoveTo(World.LocationByID(currentLocationID));
 

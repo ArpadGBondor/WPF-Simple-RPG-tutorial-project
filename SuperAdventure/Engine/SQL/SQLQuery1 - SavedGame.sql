@@ -13,7 +13,8 @@ CREATE TABLE [dbo].[SavedGame](
        [MaximumHitPoints] [int] NOT NULL,
        [Gold] [int] NOT NULL,
        [ExperiencePoints] [int] NOT NULL,
-       [CurrentLocationID] [int] NOT NULL
+       [CurrentLocationID] [int] NOT NULL,
+	   [CurrentWeaponID] [int] NOT NULL
 ) ON [PRIMARY]
 
 GO

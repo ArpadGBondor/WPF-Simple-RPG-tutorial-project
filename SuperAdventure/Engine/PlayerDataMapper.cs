@@ -50,12 +50,13 @@ namespace Engine
                         int gold = (int)reader["Gold"];
                         int experiencePoints = (int)reader["ExperiencePoints"];
                         int currentLocationID = (int)reader["CurrentLocationID"];
+                        int currentWeaponID = (int)reader["CurrentWeaponID"];
 
                         reader.Close();
 
                         // Create the Player object, with the saved game values
                         player = Player.CreatePlayerFromDatabase(currentHitPoints, maximumHitPoints, gold,
-                            experiencePoints, currentLocationID);
+                            experiencePoints, currentLocationID, currentWeaponID);
                     }
 
                     // Read the rows/records from the Quest table, and add them to the player
@@ -146,9 +147,9 @@ namespace Engine
                                 insertSavedGame.CommandType = CommandType.Text;
                                 insertSavedGame.CommandText =
                                     "INSERT INTO SavedGame " +
-                                    "(CurrentHitPoints, MaximumHitPoints, Gold, ExperiencePoints, CurrentLocationID) " +
+                                    "(CurrentHitPoints, MaximumHitPoints, Gold, ExperiencePoints, CurrentLocationID, CurrentWeaponID) " +
                                     "VALUES " +
-                                    "(@CurrentHitPoints, @MaximumHitPoints, @Gold, @ExperiencePoints, @CurrentLocationID)";
+                                    "(@CurrentHitPoints, @MaximumHitPoints, @Gold, @ExperiencePoints, @CurrentLocationID, @CurrentWeaponID)";
 
                                 // Pass the values from the player object, to the SQL query, using parameters
                                 insertSavedGame.Parameters.Add("@CurrentHitPoints", SqlDbType.Int);
@@ -161,6 +162,8 @@ namespace Engine
                                 insertSavedGame.Parameters["@ExperiencePoints"].Value = player.ExperiencePoints;
                                 insertSavedGame.Parameters.Add("@CurrentLocationID", SqlDbType.Int);
                                 insertSavedGame.Parameters["@CurrentLocationID"].Value = player.CurrentLocation.ID;
+                                insertSavedGame.Parameters.Add("@CurrentWeaponID", SqlDbType.Int);
+                                insertSavedGame.Parameters["@CurrentWeaponID"].Value = player.CurrentWeapon.ID;
 
                                 // Perform the SQL command.
                                 // Use ExecuteNonQuery, because this query does not return any results.
@@ -179,7 +182,8 @@ namespace Engine
                                     "MaximumHitPoints = @MaximumHitPoints, " +
                                     "Gold = @Gold, " +
                                     "ExperiencePoints = @ExperiencePoints, " +
-                                    "CurrentLocationID = @CurrentLocationID";
+                                    "CurrentLocationID = @CurrentLocationID, " +
+                                    "CurrentWeaponID = @CurrentWeaponID";
 
                                 // Pass the values from the player object, to the SQL query, using parameters
                                 // Using parameters helps make your program more secure.
@@ -194,6 +198,8 @@ namespace Engine
                                 updateSavedGame.Parameters["@ExperiencePoints"].Value = player.ExperiencePoints;
                                 updateSavedGame.Parameters.Add("@CurrentLocationID", SqlDbType.Int);
                                 updateSavedGame.Parameters["@CurrentLocationID"].Value = player.CurrentLocation.ID;
+                                updateSavedGame.Parameters.Add("@CurrentWeaponID", SqlDbType.Int);
+                                updateSavedGame.Parameters["@CurrentWeaponID"].Value = player.CurrentWeapon.ID;
 
                                 // Perform the SQL command.
                                 // Use ExecuteNonQuery, because this query does not return any results.
