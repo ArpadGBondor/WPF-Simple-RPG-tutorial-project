@@ -461,13 +461,7 @@ namespace Engine
 
         private void GivePlayerQuestRewards(Quest quest)
         {
-            // Display message
             RaiseMessage("You complete the '" + quest.Name + "' quest.", false);
-
-            // Remove quest items from inventory
-            RemoveQuestCompletionItems(quest);
-
-            // Give quest rewards
             RaiseMessage("You receive: ", false);
             RaiseMessage(quest.RewardExperiencePoints.ToString() + " experience points", false);
             RaiseMessage(quest.RewardGold.ToString() + " gold", false);
@@ -476,10 +470,9 @@ namespace Engine
             AddExperiencePoints(quest.RewardExperiencePoints);
             Gold += quest.RewardGold;
 
-            // Add the reward item to the player's inventory
+            RemoveQuestCompletionItems(quest);
             AddItemToInventory(quest.RewardItem);
 
-            // Mark the quest as completed
             MarkQuestCompleted(quest);
         }
 
@@ -530,57 +523,7 @@ namespace Engine
             if (_currentMonster.CurrentHitPoints <= 0)
             {
                 // Monster is dead
-                RaiseMessage("You defeated the " + _currentMonster.Name, false);
-
-                // Give player experience points for killing the monster
-                AddExperiencePoints(_currentMonster.RewardExperiencePoints);
-                RaiseMessage("You receive " + _currentMonster.RewardExperiencePoints.ToString() + " experience points", false);
-
-                // Give player gold for killing the monster 
-                Gold += _currentMonster.RewardGold;
-                RaiseMessage("You receive " + _currentMonster.RewardGold.ToString() + " gold", false);
-
-                // Get random loot items from the monster
-                List<InventoryItem> lootedItems = new List<InventoryItem>();
-
-                // Add items to the lootedItems list, comparing a random number to the drop percentage
-                foreach (LootItem lootItem in _currentMonster.LootTable)
-                {
-                    if (RandomNumberGenerator.NumberBetween(1, 100) <= lootItem.DropPercentage)
-                    {
-                        lootedItems.Add(new InventoryItem(lootItem.Details, 1));
-                    }
-                }
-
-                // If no items were randomly selected, then add the default loot item(s).
-                if (lootedItems.Count == 0)
-                {
-                    foreach (LootItem lootItem in _currentMonster.LootTable)
-                    {
-                        if (lootItem.IsDefaultItem)
-                        {
-                            lootedItems.Add(new InventoryItem(lootItem.Details, 1));
-                        }
-                    }
-                }
-
-                // Add the looted items to the player's inventory
-                foreach (InventoryItem inventoryItem in lootedItems)
-                {
-                    AddItemToInventory(inventoryItem.Details);
-
-                    if (inventoryItem.Quantity == 1)
-                    {
-                        RaiseMessage("You loot " + inventoryItem.Quantity.ToString() + " " + inventoryItem.Details.Name, false);
-                    }
-                    else
-                    {
-                        RaiseMessage("You loot " + inventoryItem.Quantity.ToString() + " " + inventoryItem.Details.NamePlural, false);
-                    }
-                }
-
-                // Add a blank line to the messages box, just for appearance.
-                RaiseMessage("", false);
+                GivePlayerMonsterKillingRewards();
 
                 // Move player to current location (to heal player and create a new monster to fight)
                 MoveTo(CurrentLocation);
@@ -588,27 +531,63 @@ namespace Engine
             else
             {
                 // Monster is still alive
-
-                // Determine the amount of damage the monster does to the player
-                int damageToPlayer = RandomNumberGenerator.NumberBetween(0, _currentMonster.MaximumDamage);
-
-                // Display message
-                RaiseMessage("The " + _currentMonster.Name + " did " + damageToPlayer.ToString() + " points of damage.", false);
-
-                // Subtract damage from player
-                CurrentHitPoints -= damageToPlayer;
-
-                if (CurrentHitPoints <= 0)
-                {
-                    // Display message
-                    RaiseMessage("The " + _currentMonster.Name + " killed you.", false);
-
-                    // Move player to "Home"
-                    MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
-                }
-
-                RaiseMessage("", false);
+                MonsterAttacksThePlayer();
             }
+        }
+
+        private void GivePlayerMonsterKillingRewards()
+        {
+            RaiseMessage("You defeated the " + _currentMonster.Name, false);
+
+            // Give player experience points for killing the monster
+            AddExperiencePoints(_currentMonster.RewardExperiencePoints);
+            RaiseMessage("You receive " + _currentMonster.RewardExperiencePoints.ToString() + " experience points", false);
+
+            // Give player gold for killing the monster 
+            Gold += _currentMonster.RewardGold;
+            RaiseMessage("You receive " + _currentMonster.RewardGold.ToString() + " gold", false);
+
+            // Get random loot items from the monster
+            List<InventoryItem> lootedItems = new List<InventoryItem>();
+
+            // Add items to the lootedItems list, comparing a random number to the drop percentage
+            foreach (LootItem lootItem in _currentMonster.LootTable)
+            {
+                if (RandomNumberGenerator.NumberBetween(1, 100) <= lootItem.DropPercentage)
+                {
+                    lootedItems.Add(new InventoryItem(lootItem.Details, 1));
+                }
+            }
+
+            // If no items were randomly selected, then add the default loot item(s).
+            if (lootedItems.Count == 0)
+            {
+                foreach (LootItem lootItem in _currentMonster.LootTable)
+                {
+                    if (lootItem.IsDefaultItem)
+                    {
+                        lootedItems.Add(new InventoryItem(lootItem.Details, 1));
+                    }
+                }
+            }
+
+            // Add the looted items to the player's inventory
+            foreach (InventoryItem inventoryItem in lootedItems)
+            {
+                AddItemToInventory(inventoryItem.Details);
+
+                if (inventoryItem.Quantity == 1)
+                {
+                    RaiseMessage("You loot " + inventoryItem.Quantity.ToString() + " " + inventoryItem.Details.Name, false);
+                }
+                else
+                {
+                    RaiseMessage("You loot " + inventoryItem.Quantity.ToString() + " " + inventoryItem.Details.NamePlural, false);
+                }
+            }
+
+            // Add a blank line to the messages box, just for appearance.
+            RaiseMessage("", false);
         }
 
         public void UsePotion(HealingPotion potion)
@@ -629,7 +608,11 @@ namespace Engine
             RaiseMessage("You drink a " + potion.Name, false);
 
             // Monster gets their turn to attack
+            MonsterAttacksThePlayer();
+        }
 
+        private void MonsterAttacksThePlayer()
+        {
             // Determine the amount of damage the monster does to the player
             int damageToPlayer = RandomNumberGenerator.NumberBetween(0, _currentMonster.MaximumDamage);
 
