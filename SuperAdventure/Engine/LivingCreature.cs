@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace Engine
 {
@@ -32,6 +33,13 @@ namespace Engine
         {
             CurrentHitPoints = MaximumHitPoints;
         }
+
+        protected void Heal(int hitPointsToHeal)
+        {
+            CurrentHitPoints = Math.Min(CurrentHitPoints + hitPointsToHeal, MaximumHitPoints);
+        }
+
+        public bool IsDead { get { return CurrentHitPoints <= 0; } }
 
         public string ShowHitPoints
         {

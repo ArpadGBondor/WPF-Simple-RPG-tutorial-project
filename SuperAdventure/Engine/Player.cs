@@ -9,6 +9,13 @@ namespace Engine
     public class Player : LivingCreature
     {
         private int _gold;
+        private int _experiencePoints;
+        private Location _currentLocation;
+        private Weapon _currentWeapon;
+        private Monster _currentMonster;
+
+        public event EventHandler<MessageEventArgs> OnMessage;
+
         public int Gold
         {
             get { return _gold; }
@@ -19,7 +26,6 @@ namespace Engine
             }
         }
 
-        private int _experiencePoints;
         public int ExperiencePoints
         {
             get { return _experiencePoints; }
@@ -32,19 +38,7 @@ namespace Engine
         }
         public int Level { get { return (ExperiencePoints / 100 + 1); } }
 
-        private Weapon _currentWeapon;
-        public Weapon CurrentWeapon
-        {
-            get { return _currentWeapon; }
-            set
-            {
-                _currentWeapon = value;
-                OnPropertyChanged("CurrentWeapon");
-            }
-        }
-
-        private Location _currentLocation;
-        public Location CurrentLocation 
+        public Location CurrentLocation
         {
             get { return _currentLocation; }
             set
@@ -54,7 +48,15 @@ namespace Engine
             }
         }
 
-        private Monster _currentMonster;
+        public Weapon CurrentWeapon
+        {
+            get { return _currentWeapon; }
+            set
+            {
+                _currentWeapon = value;
+                OnPropertyChanged("CurrentWeapon");
+            }
+        }
 
         public BindingList<InventoryItem> Inventory { get; set; }
         public List<Weapon> Weapons
@@ -66,8 +68,6 @@ namespace Engine
             get { return Inventory.Where(x => x.Details is HealingPotion).Select(x => x.Details as HealingPotion).ToList(); }
         }
         public BindingList<PlayerQuest> Quests { get; set; }
-
-        public event EventHandler<MessageEventArgs> OnMessage;
 
         private Player(int currentHitPoints, int maximumHitPoints, int gold, int experiencePoints) : base(currentHitPoints, maximumHitPoints)
         {
@@ -82,7 +82,7 @@ namespace Engine
         {
             Player player = new Player(10, 10, 20, 0);
             player.Inventory.Add(new InventoryItem(World.ItemByID(World.ITEM_ID_RUSTY_SWORD), 1));
-            player.CurrentLocation = World.LocationByID(World.LOCATION_ID_HOME);
+            player.MoveHome();
 
             return player;
         }
@@ -138,7 +138,7 @@ namespace Engine
             catch
             {
                 // If there was an error with the XML data, return a default player object
-                return Player.CreateDefaultPlayer();
+                return CreateDefaultPlayer();
             }
         }
 
@@ -166,31 +166,15 @@ namespace Engine
             player.AppendChild(stats);
 
             // Create the child nodes for the "Stats" node
-            XmlNode currentHitPoints = playerData.CreateElement("CurrentHitPoints");
-            currentHitPoints.AppendChild(playerData.CreateTextNode(this.CurrentHitPoints.ToString()));
-            stats.AppendChild(currentHitPoints);
-
-            XmlNode maximumHitPoints = playerData.CreateElement("MaximumHitPoints");
-            maximumHitPoints.AppendChild(playerData.CreateTextNode(base.MaximumHitPoints.ToString()));
-            stats.AppendChild(maximumHitPoints);
-
-            XmlNode gold = playerData.CreateElement("Gold");
-            gold.AppendChild(playerData.CreateTextNode(this.Gold.ToString()));
-            stats.AppendChild(gold);
-
-            XmlNode experiencePoints = playerData.CreateElement("ExperiencePoints");
-            experiencePoints.AppendChild(playerData.CreateTextNode(this.ExperiencePoints.ToString()));
-            stats.AppendChild(experiencePoints);
-
-            XmlNode currentLocation = playerData.CreateElement("CurrentLocation");
-            currentLocation.AppendChild(playerData.CreateTextNode(this.CurrentLocation.ID.ToString()));
-            stats.AppendChild(currentLocation);
+            CreateNewChildXmlNode(playerData, stats, "CurrentHitPoints", CurrentHitPoints);
+            CreateNewChildXmlNode(playerData, stats, "MaximumHitPoints", MaximumHitPoints);
+            CreateNewChildXmlNode(playerData, stats, "Gold", Gold);
+            CreateNewChildXmlNode(playerData, stats, "ExperiencePoints", ExperiencePoints);
+            CreateNewChildXmlNode(playerData, stats, "CurrentLocation", CurrentLocation.ID);
 
             if (CurrentWeapon != null)
             {
-                XmlNode currentWeapon = playerData.CreateElement("CurrentWeapon");
-                currentWeapon.AppendChild(playerData.CreateTextNode(this.CurrentWeapon.ID.ToString()));
-                stats.AppendChild(currentWeapon);
+                CreateNewChildXmlNode(playerData, stats, "CurrentWeapon", CurrentWeapon.ID);
             }
 
             // Create the "InventoryItems" child node to hold each InventoryItem node
@@ -198,17 +182,12 @@ namespace Engine
             player.AppendChild(inventoryItems);
 
             // Create an "InventoryItem" node for each item in the player's inventory
-            foreach (InventoryItem item in this.Inventory)
+            foreach (InventoryItem item in Inventory)
             {
                 XmlNode inventoryItem = playerData.CreateElement("InventoryItem");
 
-                XmlAttribute idAttribute = playerData.CreateAttribute("ID");
-                idAttribute.Value = item.Details.ID.ToString();
-                inventoryItem.Attributes.Append(idAttribute);
-
-                XmlAttribute quantityAttribute = playerData.CreateAttribute("Quantity");
-                quantityAttribute.Value = item.Quantity.ToString();
-                inventoryItem.Attributes.Append(quantityAttribute);
+                AddXmlAttributeToNode(playerData, inventoryItem, "ID", item.Details.ID);
+                AddXmlAttributeToNode(playerData, inventoryItem, "Quantity", item.Quantity);
 
                 inventoryItems.AppendChild(inventoryItem);
             }
@@ -218,23 +197,19 @@ namespace Engine
             player.AppendChild(playerQuests);
 
             // Create a "PlayerQuest" node for each quest the player has acquired
-            foreach (PlayerQuest quest in this.Quests)
+            foreach (PlayerQuest quest in Quests)
             {
                 XmlNode playerQuest = playerData.CreateElement("PlayerQuest");
 
-                XmlAttribute idAttribute = playerData.CreateAttribute("ID");
-                idAttribute.Value = quest.Details.ID.ToString();
-                playerQuest.Attributes.Append(idAttribute);
-
-                XmlAttribute isCompletedAttribute = playerData.CreateAttribute("IsCompleted");
-                isCompletedAttribute.Value = quest.IsCompleted.ToString();
-                playerQuest.Attributes.Append(isCompletedAttribute);
+                AddXmlAttributeToNode(playerData, playerQuest, "ID", quest.Details.ID);
+                AddXmlAttributeToNode(playerData, playerQuest, "IsCompleted", quest.IsCompleted);
 
                 playerQuests.AppendChild(playerQuest);
             }
 
             return playerData.InnerXml; // The XML document, as a string, so we can save the data to disk
         }
+
 
         public void AddExperiencePoints(int experiencePointsToAdd)
         {
@@ -261,15 +236,7 @@ namespace Engine
 
         public bool PlayerNotCompletedThisQuest(Quest quest)
         {
-            foreach (PlayerQuest playerQuest in Quests)
-            {
-                if (playerQuest.Details.ID == quest.ID)
-                {
-                    return !playerQuest.IsCompleted;
-                }
-            }
-
-            return true;
+            return Quests.Any(pq => pq.Details.ID == quest.ID && !pq.IsCompleted);
         }
 
         public bool PlayerHasAllQuestCompletionItems(Quest quest)
@@ -302,9 +269,9 @@ namespace Engine
 
         public void AddItemToInventory(Item itemToAdd, int quantity = 1)
         {
-            InventoryItem item = Inventory.SingleOrDefault(ii => ii.Details.ID == itemToAdd.ID);
+            InventoryItem existingItemInInventory = Inventory.SingleOrDefault(ii => ii.Details.ID == itemToAdd.ID);
 
-            if (item == null)
+            if (existingItemInInventory == null)
             {
                 // They didn't have the item, so add it to their inventory
                 Inventory.Add(new InventoryItem(itemToAdd, quantity));
@@ -312,7 +279,7 @@ namespace Engine
             else
             {
                 // They have the item in their inventory, so increase the quantity
-                item.Quantity += quantity;
+                existingItemInInventory.Quantity += quantity;
             }
 
             RaiseInventoryChangedEvent(itemToAdd);
@@ -332,15 +299,8 @@ namespace Engine
                 // They have the item in their inventory, so decrease the quantity
                 item.Quantity -= quantity;
 
-                // Don't allow negative quantities.
-                // We might want to raise an error for this situation
-                if (item.Quantity < 0)
-                {
-                    item.Quantity = 0;
-                }
-
                 // If the quantity is zero, remove the item from the list
-                if (item.Quantity == 0)
+                if (item.Quantity <= 0)
                 {
                     Inventory.Remove(item);
                 }
@@ -415,47 +375,28 @@ namespace Engine
 
         private void SetTheCurrentMonsterForTheCurrentLocation(Location location)
         {
-            if (location.IsMonsterLivingHere)
+            // Populate the current monster with this location's monster (or null, if there is no monster here)
+            _currentMonster = location.NewInstanceOfMonsterLivingHere();
+
+            if (_currentMonster != null)
             {
-                RaiseMessage("You see a " + location.MonsterLivingHere.Name, true);
-
-                // Make a new monster, using the values from the standard monster in the World.Monster list
-                Monster standardMonster = World.MonsterByID(location.MonsterLivingHere.ID);
-
-                _currentMonster = new Monster(standardMonster.ID, standardMonster.Name, standardMonster.MaximumDamage,
-                    standardMonster.RewardExperiencePoints, standardMonster.RewardGold, standardMonster.CurrentHitPoints, standardMonster.MaximumHitPoints);
-
-                foreach (LootItem lootItem in standardMonster.LootTable)
-                {
-                    _currentMonster.LootTable.Add(lootItem);
-                }
-            }
-            else
-            {
-                _currentMonster = null;
+                RaiseMessage("You see a " + _currentMonster.Name);
             }
         }
 
         private void GiveQuestToPlayer(Quest quest)
         {
-            // Display the messages
             RaiseMessage("You receive the " + quest.Name + " quest.", false);
             RaiseMessage(quest.Description, false);
             RaiseMessage("To complete it, return with:", false);
+
             foreach (QuestCompletionItem qci in quest.QuestCompletionItems)
             {
-                if (qci.Quantity == 1)
-                {
-                    RaiseMessage(qci.Quantity.ToString() + " " + qci.Details.Name, false);
-                }
-                else
-                {
-                    RaiseMessage(qci.Quantity.ToString() + " " + qci.Details.NamePlural, false);
-                }
+                RaiseMessage(string.Format("{0} {1}", qci.Quantity,
+                    qci.Quantity == 1 ? qci.Details.Name : qci.Details.NamePlural));
             }
             RaiseMessage("", false);
 
-            // Add the quest to the player's quest list
             Quests.Add(new PlayerQuest(quest));
         }
 
@@ -513,14 +454,18 @@ namespace Engine
             // Determine the amount of damage to do to the monster
             int damageToMonster = (Level / 10) + RandomNumberGenerator.NumberBetween(currentWeapon.MinimumDamage, currentWeapon.MaximumDamage);
 
-            // Apply the damage to the monster's CurrentHitPoints
-            _currentMonster.CurrentHitPoints -= damageToMonster;
-
-            // Display message
-            RaiseMessage("You hit the " + _currentMonster.Name + " for " + damageToMonster.ToString() + " points.", false);
+            if (damageToMonster == 0)
+            {
+                RaiseMessage("You missed the " + _currentMonster.Name);
+            }
+            else
+            {
+                _currentMonster.CurrentHitPoints -= damageToMonster;
+                RaiseMessage("You hit the " + _currentMonster.Name + " for " + damageToMonster + " points.");
+            }
 
             // Check if the monster is dead
-            if (_currentMonster.CurrentHitPoints <= 0)
+            if (_currentMonster.IsDead)
             {
                 // Monster is dead
                 GivePlayerMonsterKillingRewards();
@@ -537,75 +482,35 @@ namespace Engine
 
         private void GivePlayerMonsterKillingRewards()
         {
-            RaiseMessage("You defeated the " + _currentMonster.Name, false);
+            RaiseMessage("");
+            RaiseMessage("You defeated the " + _currentMonster.Name);
+            RaiseMessage("You receive " + _currentMonster.RewardExperiencePoints + " experience points");
+            RaiseMessage("You receive " + _currentMonster.RewardGold + " gold");
 
-            // Give player experience points for killing the monster
             AddExperiencePoints(_currentMonster.RewardExperiencePoints);
-            RaiseMessage("You receive " + _currentMonster.RewardExperiencePoints.ToString() + " experience points", false);
-
-            // Give player gold for killing the monster 
             Gold += _currentMonster.RewardGold;
-            RaiseMessage("You receive " + _currentMonster.RewardGold.ToString() + " gold", false);
 
-            // Get random loot items from the monster
-            List<InventoryItem> lootedItems = new List<InventoryItem>();
-
-            // Add items to the lootedItems list, comparing a random number to the drop percentage
-            foreach (LootItem lootItem in _currentMonster.LootTable)
+            // Give monster's loot items to the player
+            foreach (InventoryItem inventoryItem in _currentMonster.LootItems)
             {
-                if (RandomNumberGenerator.NumberBetween(1, 100) <= lootItem.DropPercentage)
-                {
-                    lootedItems.Add(new InventoryItem(lootItem.Details, 1));
-                }
+                AddItemToInventory(inventoryItem.Details, inventoryItem.Quantity);
+
+                RaiseMessage(string.Format("You loot {0} {1}", inventoryItem.Quantity, inventoryItem.Description));
             }
 
-            // If no items were randomly selected, then add the default loot item(s).
-            if (lootedItems.Count == 0)
-            {
-                foreach (LootItem lootItem in _currentMonster.LootTable)
-                {
-                    if (lootItem.IsDefaultItem)
-                    {
-                        lootedItems.Add(new InventoryItem(lootItem.Details, 1));
-                    }
-                }
-            }
-
-            // Add the looted items to the player's inventory
-            foreach (InventoryItem inventoryItem in lootedItems)
-            {
-                AddItemToInventory(inventoryItem.Details);
-
-                if (inventoryItem.Quantity == 1)
-                {
-                    RaiseMessage("You loot " + inventoryItem.Quantity.ToString() + " " + inventoryItem.Details.Name, false);
-                }
-                else
-                {
-                    RaiseMessage("You loot " + inventoryItem.Quantity.ToString() + " " + inventoryItem.Details.NamePlural, false);
-                }
-            }
-
-            // Add a blank line to the messages box, just for appearance.
-            RaiseMessage("", false);
+            RaiseMessage("");
         }
 
         public void UsePotion(HealingPotion potion)
         {
-            // Add healing amount to the player's current hit points
-            CurrentHitPoints = (CurrentHitPoints + potion.AmountToHeal);
+            // Display message
+            RaiseMessage("You drink a " + potion.Name, false);
 
-            // CurrentHitPoints cannot exceed player's MaximumHitPoints
-            if (CurrentHitPoints > MaximumHitPoints)
-            {
-                CurrentHitPoints = MaximumHitPoints;
-            }
+            // Add healing amount to the player's current hit points
+            Heal(potion.AmountToHeal);
 
             // Remove the potion from the player's inventory
             RemoveItemFromInventory(potion, 1);
-
-            // Display message
-            RaiseMessage("You drink a " + potion.Name, false);
 
             // Monster gets their turn to attack
             MonsterAttacksThePlayer();
@@ -622,13 +527,13 @@ namespace Engine
             // Subtract damage from player
             CurrentHitPoints -= damageToPlayer;
 
-            if (CurrentHitPoints <= 0)
+            if (IsDead)
             {
                 // Display message
                 RaiseMessage("The " + _currentMonster.Name + " killed you.", true);
 
                 // Move player to "Home"
-                MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
+                MoveHome();
             }
 
             RaiseMessage("", false);
@@ -636,10 +541,26 @@ namespace Engine
 
         private void RaiseMessage(string message, bool addExtraNewLine = false)
         {
-            if (OnMessage != null)
-            {
-                OnMessage(this, new MessageEventArgs(message, addExtraNewLine));
-            }
+            OnMessage?.Invoke(this, new MessageEventArgs(message, addExtraNewLine));
+        }
+
+        private void MoveHome()
+        {
+            MoveTo(World.LocationByID(World.LOCATION_ID_HOME));
+        }
+
+        private void CreateNewChildXmlNode(XmlDocument document, XmlNode parentNode, string elementName, object value)
+        {
+            XmlNode node = document.CreateElement(elementName);
+            node.AppendChild(document.CreateTextNode(value.ToString()));
+            parentNode.AppendChild(node);
+        }
+
+        private void AddXmlAttributeToNode(XmlDocument document, XmlNode node, string attributeName, object value)
+        {
+            XmlAttribute attribute = document.CreateAttribute(attributeName);
+            attribute.Value = value.ToString();
+            node.Attributes.Append(attribute);
         }
     }
 }
