@@ -92,7 +92,6 @@ namespace SuperAdventure_WinForms
             cboPotions.ValueMember = "Id";
 
             _player.PropertyChanged += PlayerOnPropertyChanged;
-
             _player.OnMessage += DisplayMessage;
 
             _player.MoveTo(_player.CurrentLocation);
@@ -133,7 +132,6 @@ namespace SuperAdventure_WinForms
 
             _player.UsePotion(potion);
         }
-
 
         private void SuperAdventure_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -230,6 +228,13 @@ namespace SuperAdventure_WinForms
             TradingScreen tradingScreen = new TradingScreen(_player);
             tradingScreen.StartPosition = FormStartPosition.CenterParent;
             tradingScreen.ShowDialog(this);
+        }
+
+        private void btnMap_Click(object sender, EventArgs e)
+        {
+            WorldMap mapScreen = new WorldMap();
+            mapScreen.StartPosition = FormStartPosition.CenterParent;
+            mapScreen.ShowDialog(this);
         }
     }
 }

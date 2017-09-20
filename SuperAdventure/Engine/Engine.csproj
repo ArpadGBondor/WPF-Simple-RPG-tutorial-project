@@ -61,16 +61,16 @@
     <Compile Include="World.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Images\Bridge.png" />
-    <Content Include="Images\FarmFields.png" />
-    <Content Include="Images\Farmhouse.png" />
-    <Content Include="Images\HerbalistsGarden.png" />
-    <Content Include="Images\HerbalistsHut.png" />
-    <Content Include="Images\Home.png" />
-    <Content Include="Images\SpiderForest.png" />
-    <Content Include="Images\TownGate.png" />
-    <Content Include="Images\TownSquare.png" />
-    <Content Include="Images\Trader.png" />
+    <EmbeddedResource Include="Images\Bridge.png" />
+    <EmbeddedResource Include="Images\FarmFields.png" />
+    <EmbeddedResource Include="Images\Farmhouse.png" />
+    <EmbeddedResource Include="Images\HerbalistsGarden.png" />
+    <EmbeddedResource Include="Images\HerbalistsHut.png" />
+    <EmbeddedResource Include="Images\Home.png" />
+    <EmbeddedResource Include="Images\SpiderForest.png" />
+    <EmbeddedResource Include="Images\TownGate.png" />
+    <EmbeddedResource Include="Images\TownSquare.png" />
+    <EmbeddedResource Include="Images\Trader.png" />
     <Content Include="SQL\SQLQuery1 - SavedGame.sql" />
     <Content Include="SQL\SQLQuery2 - Inventory.sql" />
     <Content Include="SQL\SQLQuery3 - Quest.sql" />
