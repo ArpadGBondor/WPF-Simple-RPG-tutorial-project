@@ -197,5 +197,13 @@ namespace SuperAdventure_WPF.UI
             tradingScreen.Owner = this;
             tradingScreen.ShowDialog();
         }
+
+        private void btnMap_Click(object sender, RoutedEventArgs e)
+        {
+            WorldMap worldMap = new WorldMap(_player);
+            worldMap.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            worldMap.Owner = this;
+            worldMap.ShowDialog();
+        }
     }
 }
