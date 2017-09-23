@@ -157,7 +157,7 @@ namespace Engine
 
             player.CurrentWeapon = (Weapon)World.ItemByID(currentWeaponID);
 
-            player.MoveTo(World.LocationByID(currentLocationID));
+            // player.MoveTo(World.LocationByID(currentLocationID));
 
             return player;
         }
