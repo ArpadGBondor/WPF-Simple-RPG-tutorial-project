@@ -61,6 +61,7 @@
     <Compile Include="World.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SQL\SQLQuery4 - LocationVisited.sql" />
     <EmbeddedResource Include="Images\Bridge.png" />
     <EmbeddedResource Include="Images\FarmFields.png" />
     <EmbeddedResource Include="Images\Farmhouse.png" />
@@ -71,6 +72,7 @@
     <EmbeddedResource Include="Images\TownGate.png" />
     <EmbeddedResource Include="Images\TownSquare.png" />
     <EmbeddedResource Include="Images\Trader.png" />
+    <EmbeddedResource Include="Images\FogLocation.png" />
     <Content Include="SQL\SQLQuery1 - SavedGame.sql" />
     <Content Include="SQL\SQLQuery2 - Inventory.sql" />
     <Content Include="SQL\SQLQuery3 - Quest.sql" />

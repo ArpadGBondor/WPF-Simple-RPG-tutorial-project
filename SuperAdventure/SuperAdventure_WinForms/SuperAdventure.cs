@@ -232,7 +232,7 @@ namespace SuperAdventure_WinForms
 
         private void btnMap_Click(object sender, EventArgs e)
         {
-            WorldMap mapScreen = new WorldMap();
+            WorldMap mapScreen = new WorldMap(_player);
             mapScreen.StartPosition = FormStartPosition.CenterParent;
             mapScreen.ShowDialog(this);
         }
